@@ -1,0 +1,288 @@
+{
+  "groups": [
+    {
+      "id": "gate",
+      "tier": 1,
+      "title": "Palier 1 — Le minimum pour être open source",
+      "why": "Sans ces 8 points, votre projet n'est pas open source : il est seulement public. C'est l'objectif de jeudi pour toutes les équipes.",
+      "items": [
+        {
+          "id": "gate-license",
+          "label": "Fichier LICENSE avec une licence open source reconnue (MIT, Apache 2.0, GPL, AGPL…)",
+          "required": true
+        },
+        {
+          "id": "gate-public-repo",
+          "label": "Repo accessible publiquement, sans invitation",
+          "required": true
+        },
+        {
+          "id": "gate-readme",
+          "label": "README qui dit ce que fait le projet et comment le lancer",
+          "required": true
+        },
+        {
+          "id": "gate-no-secrets",
+          "label": "Aucun secret dans l'historique Git (.env, clés API, tokens)",
+          "required": true
+        },
+        {
+          "id": "gate-dependencies",
+          "label": "Dépendances déclarées et figées (package.json + lockfile, requirements.txt, Cargo.lock…)",
+          "required": true
+        },
+        {
+          "id": "gate-runtime-version",
+          "label": "Version du runtime spécifiée (Node, Python, Rust, Java…)",
+          "required": true
+        },
+        {
+          "id": "gate-no-hardcoded-paths",
+          "label": "Aucun chemin absolu ni configuration en dur dans le code",
+          "required": true
+        },
+        {
+          "id": "gate-contribution-entrypoint",
+          "label": "Une porte d'entrée pour contribuer : issues ouvertes ou CONTRIBUTING.md",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "git",
+      "tier": 2,
+      "title": "Historique Git",
+      "why": "Un tiers doit pouvoir lire l'histoire du projet et faire confiance à ce qu'il y trouve.",
+      "items": [
+        {
+          "id": "git-commit-messages",
+          "label": "Messages de commit lisibles (pas de « fix », « wip », « final v2 »)",
+          "required": false
+        },
+        {
+          "id": "git-atomic-commits",
+          "label": "Commits atomiques : une intention par commit",
+          "required": false
+        },
+        {
+          "id": "git-no-artifacts",
+          "label": "node_modules / vendor / dist / .DS_Store / fichiers IDE non versionnés",
+          "required": false
+        },
+        {
+          "id": "git-gitignore",
+          "label": ".gitignore présent et complet",
+          "required": false
+        },
+        {
+          "id": "git-no-heavy-binaries",
+          "label": "Pas de binaires lourds versionnés",
+          "required": false
+        },
+        {
+          "id": "git-protected-main",
+          "label": "Branche main protégée, tout passe par des PR relues",
+          "required": false
+        },
+        {
+          "id": "git-identifiable-authors",
+          "label": "Auteurs identifiables (pas de « root », « ubuntu »)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "docs",
+      "tier": 2,
+      "title": "Documentation",
+      "why": "En 30 secondes, un inconnu doit comprendre ce que c'est, comment le lancer, comment aider.",
+      "items": [
+        {
+          "id": "docs-install-tested",
+          "label": "Instructions d'installation testées sur une machine vierge",
+          "required": false
+        },
+        {
+          "id": "docs-usage-examples",
+          "label": "Exemples d'usage (et captures d'écran si interface)",
+          "required": false
+        },
+        {
+          "id": "docs-contributing",
+          "label": "CONTRIBUTING.md détaillé : conventions, process de PR",
+          "required": false
+        },
+        {
+          "id": "docs-code-of-conduct",
+          "label": "Code of Conduct",
+          "required": false
+        },
+        {
+          "id": "docs-changelog",
+          "label": "CHANGELOG ou release notes",
+          "required": false
+        },
+        {
+          "id": "docs-up-to-date",
+          "label": "La documentation est cohérente avec le code actuel",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "legal",
+      "tier": 2,
+      "title": "Licence",
+      "why": "La licence protège votre code et ceux qui le réutilisent.",
+      "items": [
+        {
+          "id": "legal-license-compatibility",
+          "label": "Licence compatible avec celles des dépendances",
+          "required": false
+        },
+        {
+          "id": "legal-third-party-attribution",
+          "label": "Code tiers réutilisé correctement attribué",
+          "required": false
+        },
+        {
+          "id": "legal-assets-licensing",
+          "label": "Assets (icônes, fonts, images) avec licence claire",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "use",
+      "tier": 2,
+      "title": "Utilisable par un tiers",
+      "why": "Le test ultime : quelqu'un d'autre lance le projet en moins de 15 minutes sans vous poser de question.",
+      "items": [
+        {
+          "id": "use-env-example",
+          "label": ".env.example fourni",
+          "required": false
+        },
+        {
+          "id": "use-external-services",
+          "label": "Services externes (BDD, cache, API) fournis via docker-compose ou documentés",
+          "required": false
+        },
+        {
+          "id": "use-single-command",
+          "label": "Une seule commande pour lancer (make dev, docker compose up, npm start)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "quality",
+      "tier": 2,
+      "title": "Qualité et maintenance",
+      "why": "Un projet qu'on ne peut ni tester ni mettre à jour ne survit pas à ses créateurs.",
+      "items": [
+        {
+          "id": "quality-tests",
+          "label": "Tests présents et qui passent",
+          "required": false
+        },
+        {
+          "id": "quality-ci",
+          "label": "CI en place et au vert",
+          "required": false
+        },
+        {
+          "id": "quality-lint-format",
+          "label": "Linter / formatter configurés, style cohérent",
+          "required": false
+        },
+        {
+          "id": "quality-dependency-updates",
+          "label": "Dépendances sans vulnérabilité connue, Dependabot ou Renovate activé",
+          "required": false
+        },
+        {
+          "id": "quality-no-dead-code",
+          "label": "Pas de code mort ni de fichiers old_ / backup_ / test2.js",
+          "required": false
+        },
+        {
+          "id": "quality-issue-triage",
+          "label": "Issues et PR externes traitées",
+          "required": false
+        },
+        {
+          "id": "quality-security-policy",
+          "label": "SECURITY.md : comment signaler une vulnérabilité",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "arch",
+      "tier": 2,
+      "title": "Structure et découpage",
+      "why": "Ce qui est ouvert doit pouvoir être réutilisé indépendamment du reste.",
+      "items": [
+        {
+          "id": "arch-reusable-module",
+          "label": "Au moins une brique réutilisable identifiée et isolable",
+          "required": false
+        },
+        {
+          "id": "arch-separation-of-concerns",
+          "label": "Logique métier séparée de l'infra et de l'interface",
+          "required": false
+        },
+        {
+          "id": "arch-semver-releases",
+          "label": "Versioning sémantique, tags et releases publiées",
+          "required": false
+        },
+        {
+          "id": "arch-packaging",
+          "label": "Packaging prévu ou fait (npm, PyPI, crates.io, Docker Hub…)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "community",
+      "tier": 2,
+      "title": "Communauté et gouvernance",
+      "why": "Un projet open source, c'est d'abord des gens qui savent où et comment aider.",
+      "items": [
+        {
+          "id": "community-bus-factor",
+          "label": "Plus d'une personne capable de maintenir le projet (bus factor > 1)",
+          "required": false
+        },
+        {
+          "id": "community-templates",
+          "label": "Templates d'issues et de PR",
+          "required": false
+        },
+        {
+          "id": "community-roadmap",
+          "label": "Roadmap ou vision publique",
+          "required": false
+        },
+        {
+          "id": "community-good-first-issues",
+          "label": "Des « good first issues » rédigées pour attirer des contributeurs",
+          "required": false
+        },
+        {
+          "id": "community-maintainers",
+          "label": "Maintainers identifiés (CODEOWNERS ou section dans le README)",
+          "required": false
+        },
+        {
+          "id": "community-discussion-space",
+          "label": "Un lieu d'échange (Discussions, Discord, mailing list…)",
+          "required": false
+        }
+      ]
+    }
+  ]
+}
