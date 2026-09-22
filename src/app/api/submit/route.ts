@@ -19,7 +19,7 @@ const bodySchema = z
     repo: z.string().trim().max(500).default(""),
     members: z.string().max(4000).default(""),
     answers: z
-      .record(z.string().max(120), z.enum(["yes", "no", "idk"]))
+      .record(z.string().max(120), z.enum(["yes", "no", "idk"], { error: "Réponse invalide." }))
       .refine(
         (answers) => Object.keys(answers).every((id) => KNOWN_IDS.has(id)),
         "Réponse pour une question inconnue.",
@@ -37,6 +37,27 @@ function fail(message: string, status: number) {
   return NextResponse.json({ ok: false, error: message }, { status });
 }
 
+type Issue = z.ZodError["issues"][number];
+
+/** The student sees this string, so zod's own English never reaches the page.
+ *  Only the messages written above are passed through. */
+function frenchMessage(issue: Issue | undefined): string {
+  if (!issue) return "Requête invalide.";
+  switch (issue.code) {
+    case "unrecognized_keys":
+      return "Champ inattendu dans la requête.";
+    case "invalid_type":
+    case "invalid_value":
+      return issue.path.length
+        ? `Champ invalide : ${issue.path.join(".")}.`
+        : "Requête invalide.";
+    case "too_big":
+      return `Champ trop long : ${issue.path.join(".") || "requête"}.`;
+    default:
+      return issue.message;
+  }
+}
+
 export async function POST(request: Request) {
   const raw = await request.text();
   if (Buffer.byteLength(raw, "utf8") > MAX_BODY_BYTES) {
@@ -52,7 +73,7 @@ export async function POST(request: Request) {
 
   const parsed = bodySchema.safeParse(json);
   if (!parsed.success) {
-    return fail(parsed.error.issues[0]?.message ?? "Requête invalide.", 400);
+    return fail(frenchMessage(parsed.error.issues[0]), 400);
   }
 
   const { team, repo, members, answers, pdf } = parsed.data;
