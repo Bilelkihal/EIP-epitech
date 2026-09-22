@@ -1,42 +1,112 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* Ported from oss-checklist.html. The Jeudi/Vendredi toggle (.phase) and the
+   delta badge (.delta) are gone — one form, one submission, the timestamp on
+   the file tells the days apart. Everything else is the original stylesheet,
+   plus the validation and send states at the bottom. */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root{
+  --bg:#ffffff; --ink:#14213d; --ink-2:#4a5470; --line:#dfe3ec; --soft:#f3f5f9;
+  --merged:#1f883d; --merged-soft:#e6f4ea; --alert:#c62828; --alert-soft:#fdecec;
+  --amber:#b45309; --amber-soft:#fef3c7;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1526; --ink:#e8ecf5; --ink-2:#a6afc6; --line:#2a3350; --soft:#171f36;
+    --merged:#3fb950; --merged-soft:#12301b; --alert:#ff6b6b; --alert-soft:#3a1717;
+    --amber:#f5b342; --amber-soft:#3b2c0d;
   }
 }
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
+:root[data-theme="dark"]{
+  --bg:#0f1526; --ink:#e8ecf5; --ink-2:#a6afc6; --line:#2a3350; --soft:#171f36;
+  --merged:#3fb950; --merged-soft:#12301b; --alert:#ff6b6b; --alert-soft:#3a1717;
+  --amber:#f5b342; --amber-soft:#3b2c0d;
 }
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 96px)}
+*{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-plex-sans),ui-sans-serif,system-ui,sans-serif;font-size:16px;line-height:1.5}
+code,.mono{font-family:var(--font-plex-mono),ui-monospace,SFMono-Regular,Menlo,monospace}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px 80px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .wrap{padding-top:14px;padding-bottom:12px;display:flex;align-items:center;gap:18px}
+.scores{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.sc .lbl{display:block;font-size:12.5px;font-weight:600;color:var(--ink-2);margin-bottom:2px}
+.sc b{font-weight:700;font-size:26px;letter-spacing:-.02em;line-height:1}
+.sc small{font-size:14px;font-weight:500;color:var(--ink-2);margin-left:4px}
+.sc.done b{color:var(--merged)}
+.bar{height:8px;margin-top:6px;border-radius:4px;background:var(--soft);overflow:hidden;position:relative}
+.bar > i{position:absolute;inset:0 auto 0 0;width:0;background:var(--merged);transition:width .35s ease}
+.bar > i.fill1{background:var(--alert)}
+.sc.done .bar > i.fill1{background:var(--merged)}
+h1{font-size:30px;line-height:1.15;letter-spacing:-.02em;margin:36px 0 8px}
+.lead{color:var(--ink-2);margin:0 0 28px;max-width:56ch}
+.team{display:grid;gap:12px;grid-template-columns:1fr 1fr;margin-bottom:36px}
+.team label{display:block;font-weight:600;font-size:14px;margin-bottom:6px}
+.team input,.team textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.team textarea{min-height:64px;resize:vertical}
+.team .full{grid-column:1/-1}
+.team input:focus,.team textarea:focus,button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+section.grp{margin:0 0 34px}
+section.grp.gate{border:2px solid var(--ink);border-radius:12px;padding:18px 20px 6px;margin-bottom:40px;background:var(--soft)}
+section.grp.gate.done{border-color:var(--merged)}
+section.grp.gate .status{display:inline-block;margin:0 0 10px;padding:4px 10px;border-radius:999px;font-size:13px;font-weight:600;background:var(--alert-soft);color:var(--alert)}
+section.grp.gate.done .status{background:var(--merged-soft);color:var(--merged)}
+.tier2-title{font-size:22px;margin:0 0 6px;letter-spacing:-.01em}
+.tier2-lead{color:var(--ink-2);margin:0 0 24px;max-width:56ch}
+.grp h2{display:flex;align-items:baseline;gap:12px;font-size:19px;margin:0 0 4px}
+.grp h2 .n{margin-left:auto;font-size:14px;color:var(--ink-2);font-weight:500}
+.grp p.why{margin:0 0 12px;color:var(--ink-2);font-size:14.5px;max-width:60ch}
+.grp ul{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.item{display:grid;grid-template-columns:1fr auto;gap:10px 14px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.item .t{transition:color .2s}
+.item[data-v="yes"] .t{color:var(--ink-2);text-decoration:line-through;text-decoration-color:var(--merged);text-decoration-thickness:2px}
+.item .meta{display:flex;align-items:center;gap:10px}
+.tag{font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--alert-soft);color:var(--alert);white-space:nowrap}
+.item[data-v="yes"] .tag{background:var(--merged-soft);color:var(--merged)}
+.tri{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.tri button{font:inherit;font-size:13px;font-weight:600;background:var(--bg);color:var(--ink-2);border:0;border-left:1px solid var(--line);padding:6px 10px;cursor:pointer;min-width:44px}
+.tri button:first-child{border-left:0}
+.tri button[aria-pressed="true"][data-v="yes"]{background:var(--merged);color:#fff}
+.tri button[aria-pressed="true"][data-v="no"]{background:var(--alert);color:#fff}
+.tri button[aria-pressed="true"][data-v="idk"]{background:var(--amber);color:#fff}
+.idk-note{font-size:13px;color:var(--amber);font-weight:600}
+@media (max-width:560px){ .item{grid-template-columns:1fr} .item .meta{justify-content:space-between} }
+.foot{margin-top:44px;padding-top:24px;border-top:2px solid var(--ink)}
+.foot h2{font-size:19px;margin:0 0 6px}
+.foot p{color:var(--ink-2);margin:0 0 14px;max-width:56ch}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button.primary,a.btn{font:inherit;font-weight:600;border-radius:8px;padding:11px 16px;cursor:pointer;text-decoration:none;display:inline-block}
+button.primary{background:var(--ink);color:var(--bg);border:1px solid var(--ink)}
+button.secondary{font:inherit;font-weight:600;border-radius:8px;padding:11px 16px;cursor:pointer;background:var(--bg);color:var(--ink);border:1px solid var(--ink)}
+button.primary[disabled],button.secondary[disabled]{opacity:.55;cursor:progress}
+a.btn{background:var(--bg);color:var(--ink);border:1px solid var(--ink)}
+button.ghost{font:inherit;background:none;border:0;color:var(--ink-2);text-decoration:underline;cursor:pointer;padding:11px 4px}
+pre.out{margin:16px 0 0;background:var(--soft);border-radius:8px;padding:14px;font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word;overflow-x:auto;max-width:100%}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-weight:600;opacity:0;pointer-events:none;transition:.25s}
+.toast.show{opacity:1;transform:translateX(-50%)}
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+/* --- Envoi : validation, erreur, confirmation --------------------------- */
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
+/* An item the team left blank when they tried to send. */
+.item.missing{background:var(--alert-soft);border-radius:6px;box-shadow:0 0 0 6px var(--alert-soft)}
+.item.missing .t{font-weight:600}
+.team input.missing,.team textarea.missing{border-color:var(--alert)}
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+.notice{margin:16px 0 0;padding:14px 16px;border-radius:8px;font-size:14.5px;border:1px solid}
+.notice h3{margin:0 0 6px;font-size:15px}
+.notice p{margin:0;color:inherit}
+.notice ul{margin:8px 0 0;padding-left:20px}
+.notice li{margin:2px 0}
+.notice a{color:inherit}
+.notice.error{background:var(--alert-soft);border-color:var(--alert);color:var(--alert)}
+.notice.sent{background:var(--merged-soft);border-color:var(--merged);color:var(--merged)}
+.notice.sent .file{display:block;margin-top:6px;font-size:13px;word-break:break-all}
+.notice button.link{font:inherit;font-size:13.5px;font-weight:600;background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;padding:6px 0 0}
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+@media (max-width:560px){
+  .team{grid-template-columns:1fr}
+  .sc b{font-size:22px}
+  .top .wrap{gap:10px}
+  .scores{gap:10px}
 }
+@media (prefers-reduced-motion: reduce){ .bar > i, .toast, .item .t{transition:none} }
