@@ -5,7 +5,7 @@ répond **Oui / Non / ?** à 8 points de palier 1 et 36 bonnes pratiques, puis e
 son audit. Chaque envoi produit :
 
 - un PDF téléchargé par l'étudiant ;
-- un e-mail au coach, PDF en pièce jointe ;
+- un e-mail au coach (SMTP, votre compte Gmail), PDF en pièce jointe ;
 - **si l'application tourne sur une machine à disque accessible en écriture** —
   votre poste, un VPS, pas Vercel — un fichier Markdown dans
   `submissions/<AAAA-MM-JJ>/<HH-mm-ss>_<equipe>.md` et une ligne dans
@@ -32,22 +32,41 @@ npm start                        # http://localhost:3000
 
 ## Configurer l'e-mail
 
+Les audits partent par SMTP depuis votre propre compte Gmail / Google Workspace.
+
 ```bash
 cp .env.example .env.local
 ```
 
-| Variable                 | Rôle                                                              |
-| ------------------------ | ----------------------------------------------------------------- |
-| `RESEND_API_KEY`         | Clé API Resend (https://resend.com/api-keys).                      |
-| `SUBMISSIONS_EMAIL_TO`   | Destinataire des audits. Plusieurs adresses séparées par `,`.      |
-| `SUBMISSIONS_EMAIL_FROM` | Expéditeur. Défaut : `OSS Checklist <onboarding@resend.dev>`.      |
+| Variable                 | Rôle                                                                 |
+| ------------------------ | -------------------------------------------------------------------- |
+| `SMTP_USER`              | Adresse du compte qui envoie, p. ex. `vous@gmail.com`.                |
+| `SMTP_PASSWORD`          | **Mot de passe d'application**, pas le mot de passe du compte.        |
+| `SMTP_HOST`              | `smtp.gmail.com` par défaut. Autre fournisseur : mettez son serveur.  |
+| `SMTP_PORT`              | `465` (TLS implicite) par défaut ; `587` bascule en STARTTLS.         |
+| `SUBMISSIONS_EMAIL_TO`   | Destinataire des audits. Plusieurs adresses séparées par `,`.         |
+| `SUBMISSIONS_EMAIL_FROM` | Expéditeur affiché. Défaut : `OSS Checklist <SMTP_USER>`.             |
 
-`onboarding@resend.dev` fonctionne sans configuration mais **ne délivre qu'à
-l'adresse propriétaire du compte Resend**. Pour écrire ailleurs, vérifiez un
-domaine dans Resend et mettez-le dans `SUBMISSIONS_EMAIL_FROM`.
+### Obtenir un mot de passe d'application Google
 
-Sans `RESEND_API_KEY`, l'application tourne quand même : le fichier Markdown est
-écrit et l'étudiant voit une confirmation, seul l'e-mail est ignoré.
+1. Activez la validation en deux étapes : https://myaccount.google.com/signinoptions/twosv
+2. Allez sur https://myaccount.google.com/apppasswords
+3. Nommez l'application (« OSS Checklist ») et copiez les **16 caractères**.
+4. Collez-les dans `SMTP_PASSWORD` (les espaces sont ignorés).
+
+Ce mot de passe ne sert qu'à l'envoi SMTP et se révoque indépendamment, sans
+toucher au compte. Le mot de passe du compte Google ne fonctionne pas : Google a
+supprimé l'authentification SMTP par mot de passe simple en 2022.
+
+Si les mots de passe d'application sont désactivés par l'administrateur du
+domaine (fréquent sur un compte Workspace d'école), aucun envoi SMTP n'est
+possible depuis ce compte — utilisez une adresse Gmail personnelle.
+
+Sans `SMTP_USER` ou `SMTP_PASSWORD`, l'application tourne quand même : le fichier
+Markdown est écrit et l'étudiant voit une confirmation, seul l'e-mail est ignoré.
+
+Quotas : **500 destinataires par jour** pour un compte Gmail gratuit, 2 000 pour
+Google Workspace — largement au-dessus d'une promo qui envoie deux fois.
 
 ## Ouvrir à une promo pour la journée
 
@@ -101,7 +120,7 @@ Pour un envoi reçu par l'instance hébergée :
 | | Vercel | Local + tunnel |
 | --- | --- | --- |
 | PDF construit et téléchargé par l'étudiant | oui | oui |
-| E-mail Resend avec le PDF en pièce jointe | oui | oui |
+| E-mail SMTP avec le PDF en pièce jointe | oui | oui |
 | `submissions/<date>/….md` | **non** | oui |
 | Ligne dans `submissions/index.csv` | **non** | oui |
 | `npm run summary` exploitable | **non** | oui |
@@ -115,10 +134,18 @@ plante, rien n'est perdu — mais **votre boîte mail devient le seul registre**
 `.env.local` n'est pas déployé. Les trois variables doivent exister côté Vercel :
 
 ```bash
-vercel env add RESEND_API_KEY production
+vercel env add SMTP_USER production
+vercel env add SMTP_PASSWORD production
+vercel env add SMTP_HOST production
+vercel env add SMTP_PORT production
 vercel env add SUBMISSIONS_EMAIL_TO production
 vercel env add SUBMISSIONS_EMAIL_FROM production
 ```
+
+Gmail accepte les connexions SMTP sortantes depuis une fonction Vercel, mais
+Google surveille les connexions venant d'IP de datacenter : un premier envoi peut
+être refusé le temps que vous validiez l'activité depuis
+https://myaccount.google.com/notifications.
 
 ### Garder quand même les fichiers
 

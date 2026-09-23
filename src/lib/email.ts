@@ -1,9 +1,11 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 import { missingRequired, scoreAnswers, TOTAL_TIER1, TOTAL_TIER2, type Answers } from "./checklist";
 import { parisHuman } from "./paris";
 import { missingSuffix, parseMembers, type SubmissionFields } from "./summary";
 
-const DEFAULT_FROM = "OSS Checklist <onboarding@resend.dev>";
+/** Gmail by default; any SMTP provider works by overriding the host and port. */
+const DEFAULT_HOST = "smtp.gmail.com";
+const DEFAULT_PORT = 465;
 
 export type EmailResult = { sent: boolean; reason?: string };
 
@@ -58,8 +60,10 @@ function body(
 }
 
 /**
- * Sends the audit to the coach's inbox with the student's own PDF attached.
- * Never throws: a missing key or a Resend outage must not cost a team its
+ * Sends the audit to the coach's inbox with the student's own PDF attached,
+ * over SMTP — Gmail unless SMTP_HOST says otherwise.
+ *
+ * Never throws: a missing credential or an SMTP outage must not cost a team its
  * submission, so the caller decides what to tell them.
  */
 export async function sendSubmissionEmail(options: {
@@ -69,18 +73,30 @@ export async function sendSubmissionEmail(options: {
   file: string | null;
   pdf?: { filename: string; base64: string };
 }): Promise<EmailResult> {
-  const apiKey = process.env.RESEND_API_KEY;
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASSWORD;
   const to = process.env.SUBMISSIONS_EMAIL_TO;
-  if (!apiKey) return { sent: false, reason: "RESEND_API_KEY absent" };
+  if (!user) return { sent: false, reason: "SMTP_USER absent" };
+  if (!pass) return { sent: false, reason: "SMTP_PASSWORD absent" };
   if (!to) return { sent: false, reason: "SUBMISSIONS_EMAIL_TO absent" };
 
   const { fields, answers, submittedAt, file, pdf } = options;
   const { tier1, tier2 } = scoreAnswers(answers);
+  const port = Number(process.env.SMTP_PORT ?? DEFAULT_PORT);
 
   try {
-    const resend = new Resend(apiKey);
-    const { error } = await resend.emails.send({
-      from: process.env.SUBMISSIONS_EMAIL_FROM || DEFAULT_FROM,
+    const transport = nodemailer.createTransport({
+      host: process.env.SMTP_HOST ?? DEFAULT_HOST,
+      port,
+      // 465 is implicit TLS; 587 upgrades with STARTTLS.
+      secure: port === 465,
+      auth: { user, pass },
+    });
+
+    await transport.sendMail({
+      // Gmail rewrites a From that is not the authenticated account, so the
+      // default keeps them in step.
+      from: process.env.SUBMISSIONS_EMAIL_FROM || `OSS Checklist <${user}>`,
       to: to.split(",").map((address) => address.trim()).filter(Boolean),
       subject: `[TEK5 Open Source] ${fields.team} — P1 ${tier1}/${TOTAL_TIER1} · P2 ${tier2}/${TOTAL_TIER2}`,
       html: body(fields, answers, submittedAt, file),
@@ -88,7 +104,6 @@ export async function sendSubmissionEmail(options: {
         ? [{ filename: pdf.filename, content: Buffer.from(pdf.base64, "base64") }]
         : undefined,
     });
-    if (error) return { sent: false, reason: error.message };
     return { sent: true };
   } catch (cause) {
     return { sent: false, reason: cause instanceof Error ? cause.message : String(cause) };
