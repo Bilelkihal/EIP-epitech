@@ -154,13 +154,8 @@
           "required": false
         },
         {
-          "id": "use-external-services",
-          "label": "Services externes (BDD, cache, API) fournis via docker-compose ou documentés",
-          "required": false
-        },
-        {
-          "id": "use-single-command",
-          "label": "Une seule commande pour lancer (make dev, docker compose up, npm start)",
+          "id": "use-docker-compose",
+          "label": "Un docker-compose.yml qui démarre le projet et ses services (BDD, cache, mail…)",
           "required": false
         }
       ]
