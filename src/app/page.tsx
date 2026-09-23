@@ -11,7 +11,6 @@ import {
   type Answers,
 } from "@/lib/checklist";
 import { buildPdf, downloadBlob } from "@/lib/pdf";
-import { buildSummary } from "@/lib/summary";
 
 /** Bumped from the original page's `oss-readiness-tek5`: the stored shape lost
  *  its j1/j2 snapshots, so old payloads are not worth migrating. */
@@ -36,7 +35,6 @@ export default function Page() {
   const [answers, setAnswers] = useState<Answers>({});
 
   const [hydrated, setHydrated] = useState(false);
-  const [now, setNow] = useState<Date | null>(null);
 
   const [missingIds, setMissingIds] = useState<string[]>([]);
   const [teamMissing, setTeamMissing] = useState(false);
@@ -80,11 +78,6 @@ export default function Page() {
     }
   }, [hydrated, team, repo, members, answers]);
 
-  // Le résumé est horodaté ; on rafraîchit l'heure à chaque changement.
-  useEffect(() => {
-    setNow(new Date());
-  }, [hydrated, team, repo, members, answers]);
-
   useEffect(() => () => {
     if (toastTimer.current) clearTimeout(toastTimer.current);
   }, []);
@@ -92,11 +85,6 @@ export default function Page() {
   // --- Scores ------------------------------------------------------------
 
   const scores = useMemo(() => scoreAnswers(answers), [answers]);
-  const summary = useMemo(
-    () => (now ? buildSummary({ team, repo, members }, answers, now) : ""),
-    [team, repo, members, answers, now],
-  );
-
   const gateIdk = useMemo(
     () => GROUPS.filter((g) => g.tier === 1).flatMap((g) => g.items).filter((i) => answers[i.id] === "idk").length,
     [answers],
@@ -120,15 +108,6 @@ export default function Page() {
     });
     setMissingIds((prev) => prev.filter((m) => m !== id));
   }, []);
-
-  const copySummary = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(summary);
-      showToast("Résumé copié");
-    } catch {
-      showToast("Sélectionnez et copiez le texte ci-dessous");
-    }
-  }, [summary, showToast]);
 
   const reset = useCallback(() => {
     if (!confirm("Effacer toutes les réponses enregistrées sur cet appareil ?")) return;
@@ -354,15 +333,12 @@ export default function Page() {
         <div className="foot">
           <h2>Envoyer votre audit</h2>
           <p>
-            Le résumé ci-dessous est généré à partir de vos réponses. Envoyez-le à votre coach, et
-            gardez le PDF que vous recevrez en retour.
+            Un PDF récapitulatif est généré à partir de vos réponses : il se télécharge
+            automatiquement et part au même moment à votre coach.
           </p>
           <div className="actions">
             <button className="primary" type="button" onClick={submit} disabled={sending}>
-              {sending ? "Envoi…" : "Envoyer mes réponses"}
-            </button>
-            <button className="secondary" type="button" onClick={copySummary}>
-              Copier le résumé
+              {sending ? "Envoi…" : "Générer et envoyer mon audit"}
             </button>
             <button className="ghost" type="button" onClick={reset}>
               Tout effacer sur cet appareil
@@ -421,8 +397,6 @@ export default function Page() {
               </button>
             </div>
           )}
-
-          <pre className="out">{summary}</pre>
         </div>
       </main>
 
