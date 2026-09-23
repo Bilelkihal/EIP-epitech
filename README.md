@@ -1,5 +1,7 @@
 # Open Source Readiness — TEK5
 
+[![CI](https://github.com/Bilelkihal/EIP-epitech/actions/workflows/ci.yml/badge.svg)](https://github.com/Bilelkihal/EIP-epitech/actions/workflows/ci.yml)
+
 **En production : https://bilelkihal.online**
 
 Checklist d'ouverture open source pour les EIP. Une équipe remplit le formulaire,
