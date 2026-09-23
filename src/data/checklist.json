@@ -113,11 +113,6 @@
           "required": false
         },
         {
-          "id": "docs-changelog",
-          "label": "CHANGELOG ou release notes",
-          "required": false
-        },
-        {
           "id": "docs-up-to-date",
           "label": "La documentation est cohérente avec le code actuel",
           "required": false
