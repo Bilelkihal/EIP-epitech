@@ -211,9 +211,7 @@ export default function Page() {
         <h1>Votre EIP est-il prêt pour l&apos;open source ?</h1>
         <p className="lead">
           Auditez votre repo honnêtement, comme si vous étiez un développeur extérieur qui le
-          découvre. Cochez uniquement ce qui est vrai aujourd&apos;hui. Le palier 1 est obligatoire :
-          c&apos;est l&apos;objectif de jeudi. Les bonnes pratiques, vous choisissez vos priorités
-          pour vendredi.
+          découvre. Cochez uniquement ce qui est vrai aujourd&apos;hui.
         </p>
 
         <div className="team">
