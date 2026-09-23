@@ -218,11 +218,6 @@
           "id": "arch-semver-releases",
           "label": "Versioning sémantique, tags et releases publiées",
           "required": false
-        },
-        {
-          "id": "arch-packaging",
-          "label": "Packaging prévu ou fait (npm, PyPI, crates.io, Docker Hub…)",
-          "required": false
         }
       ]
     },
