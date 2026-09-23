@@ -3,7 +3,7 @@
 **En production : https://bilelkihal.online**
 
 Checklist d'ouverture open source pour les EIP. Une équipe remplit le formulaire,
-répond **Oui / Non / ?** à 8 points de palier 1 et 36 bonnes pratiques, puis envoie
+répond **Oui / Non / ?** à 8 points de palier 1 et 35 bonnes pratiques, puis envoie
 son audit. Chaque envoi produit :
 
 - un PDF téléchargé par l'étudiant ;
@@ -167,7 +167,7 @@ npm run summary                       # raccourci
 ```
 ÉQUIPE       N   PREMIÈRE       P1     P2   ?   DERNIÈRE       P1     P2   ?   ΔP1   ΔP2
 ────────────────────────────────────────────────────────────────────────────────────────
-Nimbus       2   22/09 18:47   6/8  21/36   4   23/09 16:02   8/8  29/36   1    +2    +8
+Nimbus       2   22/09 18:47   6/8  21/35   4   23/09 16:02   8/8  29/35   1    +2    +8
 ```
 
 Le script lit les en-têtes YAML des `.md`, regroupe par équipe (insensible à la

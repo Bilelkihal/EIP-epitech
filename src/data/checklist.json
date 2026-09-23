@@ -83,11 +83,6 @@
           "id": "git-protected-main",
           "label": "Branche main protégée, tout passe par des PR relues",
           "required": false
-        },
-        {
-          "id": "git-identifiable-authors",
-          "label": "Auteurs identifiables (pas de « root », « ubuntu »)",
-          "required": false
         }
       ]
     },
