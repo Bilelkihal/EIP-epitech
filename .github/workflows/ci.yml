@@ -1,0 +1,39 @@
+name: CI
+
+# Sur chaque push vers main et chaque pull request : si la CI est rouge,
+# le problème est visible avant la fusion, pas après.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    name: Lint, types et build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # La version vient de .nvmrc : une seule source de vérité, partagée
+      # entre les postes de dev et la CI.
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # `npm ci` et non `npm install` : installe exactement le lockfile et
+      # échoue si package.json et package-lock.json divergent.
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Vérification des types
+        run: npm run typecheck
+
+      # Le build vérifie aussi que la page et la route compilent vraiment.
+      # Aucune variable SMTP n'est nécessaire : elles sont lues à l'exécution.
+      - name: Build
+        run: npm run build
