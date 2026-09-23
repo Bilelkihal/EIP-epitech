@@ -136,11 +136,6 @@
           "required": false
         },
         {
-          "id": "legal-third-party-attribution",
-          "label": "Code tiers réutilisé correctement attribué",
-          "required": false
-        },
-        {
           "id": "legal-assets-licensing",
           "label": "Assets (icônes, fonts, images) avec licence claire",
           "required": false
