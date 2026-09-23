@@ -1,5 +1,7 @@
 # Open Source Readiness — TEK5
 
+**En production : https://oss-checklist.vercel.app**
+
 Checklist d'ouverture open source pour les EIP. Une équipe remplit le formulaire,
 répond **Oui / Non / ?** à 8 points de palier 1 et 36 bonnes pratiques, puis envoie
 son audit. Chaque envoi produit :
@@ -112,7 +114,8 @@ certains réseaux d'école isolent les postes entre eux.
 
 ## Déploiement Vercel
 
-L'application tourne sur Vercel, mais **elle n'y écrit aucun fichier**. Le système
+L'application tourne sur https://oss-checklist.vercel.app, mais **elle n'y écrit
+aucun fichier**. Le système
 de fichiers d'une fonction y est en lecture seule ; seul `/tmp` est accessible en
 écriture, il est vidé entre deux invocations et n'est partagé par aucune autre.
 Pour un envoi reçu par l'instance hébergée :
