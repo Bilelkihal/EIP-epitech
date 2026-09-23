@@ -15,6 +15,9 @@ import { buildPdf, downloadBlob } from "@/lib/pdf";
 /** Bumped from the original page's `oss-readiness-tek5`: the stored shape lost
  *  its j1/j2 snapshots, so old payloads are not worth migrating. */
 const STORAGE_KEY = "oss-readiness-tek5-v2";
+const THEME_KEY = "oss-readiness-theme";
+
+type Theme = "light" | "dark";
 
 const TRI: { value: Answer; label: string }[] = [
   { value: "yes", label: "Oui" },
@@ -42,6 +45,9 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState<Sent | null>(null);
 
+  // null tant que l'on n'a pas lu le navigateur : le serveur ne peut pas
+  // connaître le thème, on ne rend donc aucune icône avant l'hydratation.
+  const [theme, setTheme] = useState<Theme | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const teamRef = useRef<HTMLInputElement>(null);
@@ -77,6 +83,35 @@ export default function Page() {
       /* ignoré volontairement */
     }
   }, [hydrated, team, repo, members, answers]);
+
+  useEffect(() => {
+    let initial: Theme;
+    try {
+      const stored = localStorage.getItem(THEME_KEY);
+      initial =
+        stored === "light" || stored === "dark"
+          ? stored
+          : window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+    } catch {
+      initial = "light";
+    }
+    setTheme(initial);
+  }, []);
+
+  const toggleTheme = useCallback(() => {
+    setTheme((current) => {
+      const next: Theme = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      try {
+        localStorage.setItem(THEME_KEY, next);
+      } catch {
+        /* le thème ne survivra pas au rechargement, tant pis */
+      }
+      return next;
+    });
+  }, []);
 
   useEffect(() => () => {
     if (toastTimer.current) clearTimeout(toastTimer.current);
@@ -204,6 +239,24 @@ export default function Page() {
               </div>
             </div>
           </div>
+          <button
+            type="button"
+            className="theme"
+            onClick={toggleTheme}
+            aria-label={theme === "dark" ? "Passer en mode clair" : "Passer en mode sombre"}
+            title={theme === "dark" ? "Mode clair" : "Mode sombre"}
+          >
+            {theme === "dark" ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+              </svg>
+            ) : theme === "light" ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+              </svg>
+            ) : null}
+          </button>
         </div>
       </header>
 
